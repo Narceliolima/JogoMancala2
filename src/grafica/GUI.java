@@ -390,7 +390,7 @@ public class GUI {
 		placar16.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(placar16);
 		
-		jogando = new JLabel("Sua Vez");
+		jogando = new JLabel("Esperando...");
 		jogando.setHorizontalAlignment(SwingConstants.CENTER);
 		jogando.setFont(new Font("Dialog", Font.BOLD, 30));
 		jogando.setBounds(573, 301, 332, 36);
