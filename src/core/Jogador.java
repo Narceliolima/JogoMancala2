@@ -1,10 +1,11 @@
 package core;
 import java.awt.EventQueue;
 import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import comunicacao.Remoto;
@@ -18,11 +19,13 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 	private int porta;
 	private String mensagemEnv = "";
 	private Remoto oponente;
+	private Registry registro;
 	private boolean esperando = true;
 	private GUI win;
 	//--------------------------------------------//--------------------------------------------//
 	private ArrayList<Integer> historico;
 	private boolean fim = false;
+	private int novamente = 0;
 	private int jogador = 1;
 	private int jogando = 0;
 	private static final int jogador1 = 0;
@@ -38,18 +41,20 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		porta = Notificacao.configuraPorta();
 		
 		try {
-			Naming.bind("//"+host+":"+porta+"/Servidor",this);
+			registro = LocateRegistry.createRegistry(porta);
+			registro.bind("//"+host+":"+porta+"/Servidor",this);
 			win.setMensagemEnviada("Servidor Registrado!");
 			win.setMensagemEnviada("Aguardando jogador");
 			this.jogador = 0;
 		}
-		catch (AlreadyBoundException e) {
+		catch (ExportException e) {
 			try {
 				win.setMensagemEnviada("Servidor já registrado");
 				win.setMensagemEnviada("Registrando cliente");
-				Naming.bind("//"+host+":"+porta+"/Cliente",this);
+				registro = LocateRegistry.getRegistry(porta);
+				registro.bind("//"+host+":"+porta+"/Cliente",this);
 				win.setMensagemEnviada("Cliente Registrado!");
-				oponente = (Remoto)Naming.lookup("//"+host+":"+porta+"/Servidor");
+				oponente = (Remoto)registro.lookup("//"+host+":"+porta+"/Servidor");
 				win.setMensagemEnviada("Jogador "+(jogador1+1)+" conectado");
 				oponente.conecta();
 				saiEspera();
@@ -71,8 +76,6 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		}
 		
 		try {
-			
-			int novamente = 0;
 			
 			while(novamente == 0) {
 				int posicao = 0;
@@ -164,8 +167,9 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 			oponente.notificaSaida(jogador);
 			System.exit(0);
 		} catch(RemoteException e) {
-			desvinculaNomes();
-			Notificacao.pendencia();
+			if(novamente == 0) {
+				Notificacao.pendencia();
+			}
 			System.exit(0);
 			while(true) {
 				
@@ -177,7 +181,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 	
 	public void conecta() throws MalformedURLException, RemoteException, NotBoundException {
 		
-		oponente = (Remoto)Naming.lookup("//"+host+":"+porta+"/Cliente");
+		oponente = (Remoto)registro.lookup("//"+host+":"+porta+"/Cliente");
 
 		win.setMensagemEnviada("Jogador "+(jogador2+1)+" conectado");
 	}
@@ -230,22 +234,12 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 			win.finaliza();
 		}
 		win.atualizaInterface();
-		desvinculaNomes();
 	}
 	
 	public void saiEspera() throws RemoteException {
 		esperando = false;
 	}
-	
-	private void desvinculaNomes() {
-		try {
-			Naming.unbind("//"+host+":"+porta+"/Servidor");
-			Naming.unbind("//"+host+":"+porta+"/Cliente");
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	private void salvaJogador() {
 		if(historico.size()>=5) {
 			historico.remove(0);
