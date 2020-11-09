@@ -15,6 +15,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 	
 	private static final long serialVersionUID = 1337;
 	private String host;
+	private int porta;
 	private String mensagemEnv = "";
 	private Remoto oponente;
 	private boolean esperando = true;
@@ -34,9 +35,10 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		historico = new ArrayList<Integer>();
 		
 		host = Notificacao.configuraHost();
+		porta = Notificacao.configuraPorta();
 		
 		try {
-			Naming.bind("//"+host+"/Servidor",this);
+			Naming.bind("//"+host+":"+porta+"/Servidor",this);
 			win.setMensagemEnviada("Servidor Registrado!");
 			win.setMensagemEnviada("Aguardando jogador");
 			this.jogador = 0;
@@ -45,9 +47,9 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 			try {
 				win.setMensagemEnviada("Servidor já registrado");
 				win.setMensagemEnviada("Registrando cliente");
-				Naming.bind("//"+host+"/Cliente",this);
+				Naming.bind("//"+host+":"+porta+"/Cliente",this);
 				win.setMensagemEnviada("Cliente Registrado!");
-				oponente = (Remoto)Naming.lookup("//"+host+"/Servidor");
+				oponente = (Remoto)Naming.lookup("//"+host+":"+porta+"/Servidor");
 				win.setMensagemEnviada("Jogador "+(jogador1+1)+" conectado");
 				oponente.conecta();
 				saiEspera();
@@ -175,7 +177,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 	
 	public void conecta() throws MalformedURLException, RemoteException, NotBoundException {
 		
-		oponente = (Remoto)Naming.lookup("//"+host+"/Cliente");
+		oponente = (Remoto)Naming.lookup("//"+host+":"+porta+"/Cliente");
 
 		win.setMensagemEnviada("Jogador "+(jogador2+1)+" conectado");
 	}
@@ -237,8 +239,8 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 	
 	private void desvinculaNomes() {
 		try {
-			Naming.unbind("//"+host+"/Servidor");
-			Naming.unbind("//"+host+"/Cliente");
+			Naming.unbind("//"+host+":"+porta+"/Servidor");
+			Naming.unbind("//"+host+":"+porta+"/Cliente");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

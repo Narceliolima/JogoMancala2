@@ -23,7 +23,7 @@ public class Notificacao {
 		String porta;
 		
 		porta = JOptionPane.showInputDialog("Qual a porta do servidor? (Padrão: 9090)");
-		if(porta==null||porta=="") {
+		if(porta==null||porta.contentEquals("")) {
 			return 9090;
 		}
 		else {
