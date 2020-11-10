@@ -1,6 +1,7 @@
 package core;
 import java.awt.EventQueue;
 import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -47,7 +48,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 			win.setMensagemEnviada("Aguardando jogador");
 			this.jogador = 0;
 		}
-		catch (ExportException e) {
+		catch (ExportException|AlreadyBoundException e) {
 			try {
 				win.setMensagemEnviada("Servidor já registrado");
 				win.setMensagemEnviada("Registrando cliente");
