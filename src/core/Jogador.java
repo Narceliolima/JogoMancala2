@@ -2,11 +2,11 @@ package core;
 import java.awt.EventQueue;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import comunicacao.Remoto;
@@ -41,7 +41,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		host = Notificacao.configuraHost();
 		porta = Notificacao.configuraPorta();
 		
-		try {
+		/*try {
 			registro = LocateRegistry.createRegistry(porta);
 			registro.bind("//"+host+":"+porta+"/Servidor",this);
 			win.setMensagemEnviada("Servidor Registrado!");
@@ -60,6 +60,35 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 				oponente.conecta();
 				saiEspera();
 				oponente.saiEspera();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}	
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		
+		try {
+			win.setMensagemEnviada("Conectando ao servidor");
+			registro = LocateRegistry.getRegistry(porta);
+			registro.bind("//"+host+":"+porta+"/Cliente",this);
+			win.setMensagemEnviada("Conectado");
+			win.setMensagemEnviada("Cliente Registrado!");
+			oponente = (Remoto)registro.lookup("//"+host+":"+porta+"/Servidor");
+			win.setMensagemEnviada("Jogador "+(jogador1+1)+" conectado");
+			oponente.conecta();
+			saiEspera();
+			oponente.saiEspera();
+		}
+		catch (ConnectException|AlreadyBoundException e) {
+			try {
+				win.setMensagemEnviada("Não há servidores disponivel");
+				win.setMensagemEnviada("Registrando servidor");
+				registro = LocateRegistry.createRegistry(porta);
+				registro.bind("//"+host+":"+porta+"/Servidor",this);
+				win.setMensagemEnviada("Servidor Registrado!");
+				win.setMensagemEnviada("Aguardando jogador");
+				this.jogador = 0;
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}	
