@@ -41,33 +41,6 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		host = Notificacao.configuraHost();
 		porta = Notificacao.configuraPorta();
 		
-		/*try {
-			registro = LocateRegistry.createRegistry(porta);
-			registro.bind("//"+host+":"+porta+"/Servidor",this);
-			win.setMensagemEnviada("Servidor Registrado!");
-			win.setMensagemEnviada("Aguardando jogador");
-			this.jogador = 0;
-		}
-		catch (ExportException|AlreadyBoundException e) {
-			try {
-				win.setMensagemEnviada("Servidor já registrado");
-				win.setMensagemEnviada("Registrando cliente");
-				registro = LocateRegistry.getRegistry(porta);
-				registro.bind("//"+host+":"+porta+"/Cliente",this);
-				win.setMensagemEnviada("Cliente Registrado!");
-				oponente = (Remoto)registro.lookup("//"+host+":"+porta+"/Servidor");
-				win.setMensagemEnviada("Jogador "+(jogador1+1)+" conectado");
-				oponente.conecta();
-				saiEspera();
-				oponente.saiEspera();
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}	
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}*/
-		
 		try {
 			win.setMensagemEnviada("Conectando ao servidor");
 			registro = LocateRegistry.getRegistry(porta);
