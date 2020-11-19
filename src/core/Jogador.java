@@ -51,7 +51,6 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 			win.setMensagemEnviada("Jogador "+(jogador1+1)+" conectado");
 			oponente.conecta();
 			saiEspera();
-			oponente.saiEspera();
 		}
 		catch (ConnectException|AlreadyBoundException e) {
 			try {
@@ -187,6 +186,8 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		oponente = (Remoto)registro.lookup("//"+host+":"+porta+"/Cliente");
 
 		win.setMensagemEnviada("Jogador "+(jogador2+1)+" conectado");
+		
+		saiEspera();
 	}
 	
 	public void setMensagemRec(String mensagemRec) throws RemoteException {
@@ -239,7 +240,7 @@ public class Jogador extends UnicastRemoteObject implements Remoto{
 		win.atualizaInterface();
 	}
 	
-	public void saiEspera() throws RemoteException {
+	private void saiEspera() {
 		esperando = false;
 	}
 

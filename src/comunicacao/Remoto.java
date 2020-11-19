@@ -15,6 +15,5 @@ public interface Remoto extends Remote{
 	public void finalizaJogo() throws RemoteException;
 	public void voltarJogada() throws RemoteException; //Ué
 	public void notificaSaida(int jogador) throws RemoteException;
-	public void saiEspera() throws RemoteException;
 	
 }
